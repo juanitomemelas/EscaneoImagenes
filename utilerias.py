@@ -1,5 +1,7 @@
 import mysql.connector
 
+from objetos.imagen import Imagen
+
 def connection():
     #establishing the connection
     conn = mysql.connector.connect(
@@ -18,7 +20,7 @@ def closeConnection(conn):
         print("error en conexion")
     return True
 
-def dbinser():
+def dbinsert(img: Imagen):
     conn = connection()
     #Creating a cursor object using the cursor() method
     cursor = conn.cursor()
@@ -27,7 +29,7 @@ def dbinser():
    "INSERT INTO tbl_imagenes(imagenes_nombre,imagenes_texto,imagenes_ruta)"
    "VALUES (%s, %s, %s)"
     )
-    data = ('nombre', 'texto', 'c:')
+    data = (img.imagenes_nombre,img.imagenes_texto, img.imagenes_ruta)
     try:
         # Executing the SQL command
         cursor.execute(insert_stmt, data)

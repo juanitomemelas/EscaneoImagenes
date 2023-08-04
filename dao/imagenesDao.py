@@ -1,4 +1,5 @@
-import objetos.imagen
+from objetos.imagen import Imagen
 import utilerias
 
-utilerias.dbinser()
+def insertarImagen(img: Imagen):
+    utilerias.dbinsert(img)

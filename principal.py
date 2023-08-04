@@ -2,8 +2,9 @@
 import cv2
 import pytesseract
 import os
+from dao.imagenesDao import insertarImagen
+#import dao.imagenesDao
 from objetos.imagen import Imagen
-import utilerias
 
 
 
@@ -37,37 +38,18 @@ def lecturaImagen(fileName, fileNameTXT):
 
     # Creating a copy of image
     im2 = img.copy()
-
-    # A text file is created and flushed
-    file = open(fileNameTXT, "w+")
-    file.write("")
-    file.close()
-
     # Looping through the identified contours
     # Then rectangular part is cropped and passed on
     # to pytesseract for extracting text from it
     # Extracted text is then written into the text file
     textoEncontrado =""
     for cnt in contours:
-        x, y, w, h = cv2.boundingRect(cnt)
-        
+        x, y, w, h = cv2.boundingRect(cnt)        
         # Drawing a rectangle on copied image
         rect = cv2.rectangle(im2, (x, y), (x + w, y + h), (0, 255, 0), 2)
-        
-        # Cropping the text block for giving input to OCR
-        # Open the file in append mode
-        file = open(fileNameTXT, "a")        
-        # Apply OCR on the cropped image        
-        # Appending the text into file
-        txt = pytesseract.image_to_string(im2[y:y + h, x:x + w])
-        file.write(txt)
-        # Close the file
-        file.close
-        textoEncontrado = "".join(txt)
+        textoEncontrado = "".join(pytesseract.image_to_string(im2[y:y + h, x:x + w]))
 
-    img1 = Imagen(fileName, textoEncontrado,fileNameTXT) # imagenes_nombre, imagenes_texto, imagenes_ruta):
-    print(img1.imagenes_texto)
-
+    insertarImagen(Imagen(fileNameTXT, textoEncontrado,fileName))
 
 
 # assign directory
@@ -81,8 +63,5 @@ for filename in os.listdir(directory):
     f = os.path.join(directory, filename)
     # checking if it is a file
     if os.path.isfile(f):
-#        print(f)
-#        print(os.path.splitext(os.path.basename(f))[0])
         if  any(os.path.splitext(os.path.basename(f))[1] in s for s in xs):
-            lecturaImagen(f, os.path.splitext(os.path.basename(f))[0]+'.txt')
-    
+            lecturaImagen(f, os.path.splitext(os.path.basename(f))[0])
